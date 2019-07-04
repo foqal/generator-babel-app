@@ -1,0 +1,3 @@
+# About <%= name %>
+
+<%= description %>

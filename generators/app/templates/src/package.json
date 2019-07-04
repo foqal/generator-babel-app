@@ -1,0 +1,49 @@
+{
+    "name": "<%= name %>",
+    "version": "<%= version %>",
+    "description": "<%= description %>",
+    "main": "app/index.js",
+    "scripts": {
+        "start": "npm-run-all --parallel test:watch lint:watch start:app:watch",
+        "start:app": "./bin/app",
+        "start:app:watch": "nodemon --watch app --watch config --watch bin --quiet --exec 'npm' run start:app",
+        "test": "mocha --require @babel/register --reporter mocha-multi-reporters --reporter-options configFile=test/config.json --recursive",
+        "test:watch": "npm run test -- --watch --watch-extensions 'js'",
+        "lint": "esw app",
+        "lint:watch": "npm run lint -- --watch",
+        "clean": "rm -rf ../build",
+        "prebuild": "npm run clean && mkdir -p ../build/package && npm-run-all --parallel test lint",
+        "build:app": "babel app -d ../build/package/app",
+        "build": "npm-run-all --parallel build:app build:package build:copy-files",
+        "build:package": "cp package-lock.json package.json ../build/package/",
+        "build:copy-files": "cp *.md ../build/package"
+    },
+    "author": "",
+    "license": "",
+    "repository": {},
+    "bugs": {},
+    "devDependencies": {
+        "@babel/cli": "^7.4.4",
+        "@babel/core": "^7.4.4",
+        "@babel/node": "^7.2.2",
+        "@babel/polyfill": "^7.0.0-beta.44",
+        "@babel/preset-env": "^7.4.4",
+        "@babel/register": "^7.0.0-beta.44",
+        "babel-eslint": "^10.0.1",
+        "eslint": "^5.9.0",
+        "eslint-plugin-import": "^2.8.0",
+        "eslint-watch": "^4.0.2",
+        "expect": "^24.8.0",
+        "mocha": "^5.1.0",
+        "mocha-junit-reporter": "^1.16.0",
+        "mocha-multi-reporters": "^1.1.7",
+        "nodemon": "^1.17.5",
+        "npm-run-all": "^4.1.2"
+    },
+    "dependencies": {
+        "chai": "^4.2.0",
+        "chai-as-promised": "^7.1.1",
+        "chai-spies": "^1.0.0",
+        "chai-string": "^1.5.0"
+    }
+}
