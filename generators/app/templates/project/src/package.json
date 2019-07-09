@@ -11,6 +11,7 @@
         "test:watch": "npm run test -- --watch --watch-extensions 'js'",
         "lint": "esw app",
         "lint:watch": "npm run lint -- --watch",
+        "clean-all": "rm -rf ../build node_modules",
         "clean": "rm -rf ../build",
         "prebuild": "npm run clean && mkdir -p ../build/package && npm-run-all --parallel test lint",
         "build:app": "babel app -d ../build/package/app",
