@@ -7,6 +7,14 @@ const DEFAULT_CONFIG = {
     color: true
 };
 
+function setupUnhandledErrors(context) {
+    process.on("unhandledRejection", (err) => {
+        context.logger.error({err}, "Unhandled promise error");
+    });
+    process.on("uncaughtException", (err) => {
+        context.logger.error({err}, "Unhandled Exception");
+    });
+}
 
 function createLogger(config, args) {
     const logConfig = config && config.logging || DEFAULT_CONFIG;
@@ -39,4 +47,4 @@ function createLogger(config, args) {
 }
 
 
-export {createLogger};
+export {createLogger, setupUnhandledErrors};

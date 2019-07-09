@@ -48,6 +48,11 @@ class AppGenerator extends Generator {
                 type: "confirm",
                 name: "setupArgs",
                 message: "Set up args?"
+            },
+            {
+                type: "confirm",
+                name: "setupCleanup",
+                message: "Set up cleanup?"
             }
         ];
 

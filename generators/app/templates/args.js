@@ -1,5 +1,5 @@
 
-import {getInfo} from "./info";
+import {getInfo} from "./process";
 import yargs from "yargs";
 
 
