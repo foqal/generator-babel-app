@@ -20,7 +20,7 @@ async function run(stopping, args) {
     setupUnhandledErrors(context);
     try {
         <% if (setupCleanup) { %>
-        stopping.stopping(async () => {
+        stopping.onCleanup(async () => {
             // Do something before stopping.
             // The process wont exit without waiting for this task to complete.
         });
