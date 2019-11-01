@@ -1,0 +1,82 @@
+{
+    "name": "<%= name %>",
+    "version": "<%= version %>",
+    "description": "<%= description %>",
+    "main": "app/index.ts",
+    "scripts": {
+        "start": "npm-run-all --parallel test:watch lint:watch start:app:watch type-check:watch",
+        "start:app": "./bin/app",
+        "start:app:watch": "nodemon --watch app --watch config --watch bin --quiet --exec 'npm' run start:app",
+        "type-check": "tsc --noEmit",
+        "type-check:watch": "npm run type-check -- --watch",
+        "test": "mocha -r test/babel-register.js --reporter mocha-multi-reporters --reporter-options configFile=test/config.json --recursive test/**/*.ts",
+        "test:watch": "npm run test -- --watch --watch-extensions 'ts'",
+        "lint": "esw app/**/*.ts",
+        "lint:watch": "npm run lint -- --watch",
+        "clean-all": "rm -rf ../build node_modules",
+        "clean": "rm -rf ../build",
+
+    <% if (environments.length > 0) { %>
+        <% environments.forEach(function(environment) { %>
+        "build:<%= environment %>": "mkdir -p ../build/package/<%= environment %> && npm-run-all --parallel build:<%= environment %>:app build:<%= environment %>:package build:<%= environment %>:copy-files <% if (setupConfig) { %>build:<%= environment %>:config<% } %>",
+        "build:<%= environment %>:app": "babel app -d ../build/package/<%= environment %>/app --extensions \".ts,.tsx\"",
+        "build:<%= environment %>:package": "cp package-lock.json package.json ../build/package/<%= environment %>/",<% if (setupConfig) { %>
+        "build:<%= environment %>:config": "babel config/<%= environment %>.js -d ../build/package/<%= environment %>/config --extensions \".ts,.tsx,.js\"",<% } %>
+        "build:<%= environment %>:copy-files": "cp -r ../*.md ../build/package/<%= environment %>",
+        <% }); %>
+        "build": "npm-run-all --parallel <% environments.forEach(function(environment) { %>build:<%= environment %> <% }); %>",
+    <% } else { %>
+
+        "build": "mkdir -p ../build/package/ && npm-run-all --parallel build:app build:package build:copy-files <% if (setupConfig) { %>build:config<% } %>",
+        "build:app": "babel app -d ../build/package/app --extensions \".ts,.tsx\"",
+        "build:package": "cp package-lock.json package.json ../build/package/",<% if (setupConfig) { %>
+        "build:config": "babel config/.js -d ../build/package/config --extensions \".ts,.tsx\"",<% } %>
+        "build:copy-files": "cp -r ../*.md ../build/package/",
+    <% } %>
+
+        "prebuild": "npm run clean && mkdir -p ../build/package && npm-run-all --parallel test lint type-check"
+
+
+    },
+    "author": "",
+    "license": "",
+    "repository": {},
+    "bugs": {},
+    "devDependencies": {
+        "@babel/cli": "^7.6.0",
+        "@babel/core": "^7.6.0",
+        "@babel/node": "^7.6.0",
+        "@babel/polyfill": "^7.6.0",
+        "@babel/register": "^7.6.2",
+        "@babel/preset-env": "^7.6.3",
+        "@babel/preset-typescript": "^7.6.0",
+        "eslint": "^5.9.0",
+        "eslint-plugin-import": "^2.8.0",
+        "eslint-watch": "^4.0.2",
+        "@typescript-eslint/eslint-plugin": "^2.6.0",
+        "@typescript-eslint/parser": "^2.6.0",
+        "expect": "^24.8.0",
+        "mocha": "^5.1.0",
+        "mocha-junit-reporter": "^1.16.0",
+        "mocha-multi-reporters": "^1.1.7",
+        "nodemon": "^1.17.5",
+        "npm-run-all": "^4.1.2",
+
+        "typescript": "3.6.4",
+        "@types/node": "12.12.3",
+
+        "@types/mocha": "^5.2.7",
+
+        "chai": "^4.2.0",
+        "@types/chai": "^4.2.4",
+
+        "chai-as-promised": "^7.1.1",
+        "@types/chai-as-promised": "^7.1.2",
+
+        "chai-spies": "^1.0.0",
+        "@types/chai-spies": "^1.0.1",
+
+        "chai-string": "^1.5.0",
+        "@types/chai-string": "^1.4.2"
+    }
+}

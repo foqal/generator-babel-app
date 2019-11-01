@@ -1,19 +1,8 @@
 {
-    "name": "generator-babel-app",
-    "version": "0.1.0",
-    "description": "",
-    "files": [
-        "generators"
-    ],
-    "keywords": [
-        "yeoman-generator"
-    ],
-    "dependencies": {
-        "yeoman-generator": "^3.1.1",
-        "yosay": "^2.0.1",
-        "chalk": "^2.1.0",
-        "npm-check-updates": "^3.1.13"
-    },
+    "name": "<%= name %>",
+    "version": "<%= version %>",
+    "description": "<%= description %>",
+    "private": true,
     "scripts": {
         "current-version": "node -e 'console.log(process.env.npm_package_version + (process.env.BUILD_VERSION ? `.${process.env.BUILD_VERSION}` : ``))'",
         "next-build-version": "node -e 'var split = process.env.npm_package_version.split(\".\"); console.log(`${split[0]}.${split[1]}.${parseInt(split[2]) + 1}`)'",

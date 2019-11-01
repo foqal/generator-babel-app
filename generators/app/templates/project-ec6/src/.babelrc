@@ -8,8 +8,5 @@
         }]
     ],
     "env": {
-        "development": {
-
-        }
     }
 }

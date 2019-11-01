@@ -30,6 +30,12 @@ class AppGenerator extends Generator {
                 default: "0.0.1"
             },
             {
+                type: "list",
+                name: "language",
+                message: "Language",
+                choices: ["Typescript", "ECMA Script"]
+            },
+            {
                 type: "confirm",
                 name: "installNativeInjects",
                 message: "Install Native Injects?"
@@ -43,6 +49,14 @@ class AppGenerator extends Generator {
                 type: "confirm",
                 name: "setupConfig",
                 message: "Set up Config?"
+            },
+            {
+                type: "checkbox",
+                name: "environments",
+                message: "Environments",
+                default: ["development", "staging", "production"],
+                choices: () => ["development", "staging", "beta", "production"],
+                when: input => input.setupConfig
             },
             {
                 type: "confirm",
@@ -62,52 +76,68 @@ class AppGenerator extends Generator {
         });
     }
 
-    writing123() {
-
+    writing() {
+        const isTypescript = this.props.language == "Typescript";
         const templateProperties = {
             name: this.props.name,
             description: this.props.description,
             version: this.props.version,
+            isTypescript,
+            environments: [],
             ...this.props
         };
 
+        const projectPath = isTypescript ? "project-typescript" : "project-ec6";
+        const extension = isTypescript ? ".ts" : ".js"
 
         this.fs.copyTpl(
-            this.templatePath('project/**'),
+            this.templatePath(projectPath + '/**'),
             this.destinationPath(path.join(this.props.name)),
             templateProperties
         );
         this.fs.copyTpl(
-            this.templatePath('project/src/.*'),
+            this.templatePath(projectPath + '/src/.*'),
             this.destinationPath(path.join(this.props.name, "src")),
             templateProperties
         );
 
         if (this.props.setupLogging) {
             this.fs.copyTpl(
-                this.templatePath('logging.js'),
-                this.destinationPath(path.join(this.props.name, "src/app/logging.js")),
+                this.templatePath(`logging${extension}`),
+                this.destinationPath(path.join(this.props.name, `src/app/logging${extension}`)),
                 templateProperties
             );
         }
 
         if (this.props.setupArgs) {
             this.fs.copyTpl(
-                this.templatePath('args.js'),
-                this.destinationPath(path.join(this.props.name, "src/app/args.js")),
+                this.templatePath(`args${extension}`),
+                this.destinationPath(path.join(this.props.name, `src/app/args${extension}`)),
                 templateProperties
             );
         }
 
         if (this.props.setupConfig) {
+            this.props.environments.forEach(environment => {
+                if (environment == "development") {
+                    this.fs.copyTpl(
+                        this.templatePath("config/development.js"),
+                        this.destinationPath(path.join(this.props.name, "src/config/development.js")),
+                        templateProperties
+                    );
+                } else {
+                    this.fs.copyTpl(
+                        this.templatePath("config/default.js"),
+                        this.destinationPath(path.join(this.props.name, `src/config/${environment}.js`)),
+                        templateProperties
+                    );
+                }
+
+            })
+
             this.fs.copyTpl(
-                this.templatePath('config/**'),
-                this.destinationPath(path.join(this.props.name, "src/config")),
-                templateProperties
-            );
-            this.fs.copyTpl(
-                this.templatePath('config.js'),
-                this.destinationPath(path.join(this.props.name, "src/app/config.js")),
+                this.templatePath(`config${extension}`),
+                this.destinationPath(path.join(this.props.name, `src/app/config${extension}`)),
                 templateProperties
             );
         }
@@ -126,17 +156,21 @@ class AppGenerator extends Generator {
             process.chdir(this.destinationPath(path.join(this.props.name, "src")));
             this.npmInstall();
             const installs = [];
+            const devInstalls = [];
             if (this.props.installNativeInjects) {
                 installs.push("native-injects");
             }
             if (this.props.setupLogging) {
                 installs.push("bunyan");
+                devInstalls.push("@types/bunyan");
             }
             if (this.props.setupArgs) {
                 installs.push("yargs");
             }
 
             this.npmInstall(installs, { 'save': true });
+            this.npmInstall(devInstalls, { 'save-dev': true });
+
         });
     }
 };
