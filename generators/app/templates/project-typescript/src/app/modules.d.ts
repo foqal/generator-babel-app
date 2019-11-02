@@ -1,4 +1,4 @@
-declare namespace NodeJS {
+<% if (projectType == "Deployable") { %>declare namespace NodeJS {
     /*eslint-disable @typescript-eslint/no-empty-interface*/
     export interface ProcessEnv {
         // Use this place to inject the expected environment variables. This allows you to
@@ -13,8 +13,7 @@ declare namespace NodeJS {
 
     }
     /*eslint-enable @typescript-eslint/no-empty-interface*/
-}
-
+}<% } %>
 
 type Nullable<T> = T | null;
 type UndefinableNullable<T> = T | null | undefined;

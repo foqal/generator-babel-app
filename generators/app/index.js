@@ -36,6 +36,12 @@ class AppGenerator extends Generator {
                 choices: ["Typescript", "ECMA Script"]
             },
             {
+                type: "list",
+                name: "projectType",
+                message: "Project Type",
+                choices: ["Deployable", "Library"]
+            },
+            {
                 type: "confirm",
                 name: "installNativeInjects",
                 message: "Install Native Injects?"
@@ -43,12 +49,14 @@ class AppGenerator extends Generator {
             {
                 type: "confirm",
                 name: "setupLogging",
-                message: "Set up logging?"
+                message: "Set up logging?",
+                when: input => input.projectType == "Deployable"
             },
             {
                 type: "confirm",
                 name: "setupConfig",
-                message: "Set up Config?"
+                message: "Set up Config?",
+                when: input => input.projectType == "Deployable"
             },
             {
                 type: "checkbox",
@@ -61,12 +69,14 @@ class AppGenerator extends Generator {
             {
                 type: "confirm",
                 name: "setupArgs",
-                message: "Set up args?"
+                message: "Set up args?",
+                when: input => input.projectType == "Deployable"
             },
             {
                 type: "confirm",
                 name: "setupCleanup",
-                message: "Set up cleanup?"
+                message: "Set up cleanup?",
+                when: input => input.projectType == "Deployable"
             }
         ];
 
@@ -84,17 +94,35 @@ class AppGenerator extends Generator {
             version: this.props.version,
             isTypescript,
             environments: [],
+            projectType: "Deployable",
+            installNativeInjects: false,
+            setupLogging: false,
+            setupConfig: false,
+            setupArgs: false,
+            setupCleanup: false,
+
             ...this.props
         };
 
         const projectPath = isTypescript ? "project-typescript" : "project-ec6";
         const extension = isTypescript ? ".ts" : ".js"
-
+        let options;
+        if (this.props.projectType == "Library") {
+            options = {
+                globOptions: {
+                    ignore: ["**/bin/*"]
+                },
+            }
+        }
         this.fs.copyTpl(
             this.templatePath(projectPath + '/**'),
-            this.destinationPath(path.join(this.props.name)),
-            templateProperties
+            this.destinationPath(this.props.name),
+            templateProperties,
+            null,
+            options
         );
+
+
         this.fs.copyTpl(
             this.templatePath(projectPath + '/src/.*'),
             this.destinationPath(path.join(this.props.name, "src")),

@@ -27,11 +27,12 @@
         "build": "npm-run-all --parallel <% environments.forEach(function(environment) { %>build:<%= environment %> <% }); %>",
     <% } else { %>
 
-        "build": "mkdir -p ../build/package/ && npm-run-all --parallel build:app build:package build:copy-files <% if (setupConfig) { %>build:config<% } %>",
+        "build": "mkdir -p ../build/package/ && npm-run-all --parallel build:app build:package build:copy-files<% if (setupConfig) { %> build:config<% } %><% if (projectType == "Library") { %> build:types<% } %>",
         "build:app": "babel app -d ../build/package/app --extensions \".ts,.tsx\"",
         "build:package": "cp package-lock.json package.json ../build/package/",<% if (setupConfig) { %>
         "build:config": "babel config/.js -d ../build/package/config --extensions \".ts,.tsx\"",<% } %>
-        "build:copy-files": "cp -r ../*.md ../build/package/",
+        "build:copy-files": "cp -r ../*.md ../build/package/",<% if (projectType == "Library") { %>
+        "build:types": "tsc --emitDeclarationOnly --outDir ../build/package/types",<% } %>
     <% } %>
 
         "prebuild": "npm run clean && mkdir -p ../build/package && npm-run-all --parallel test lint type-check"

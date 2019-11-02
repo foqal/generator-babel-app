@@ -1,5 +1,6 @@
-<% if (setupCleanup) { %>import {setupAwaitMain, StoppingHandler} from "./process";<% } %><% if (installNativeInjects) { %>
-import "native-injects";<% } %><% if (setupArgs) { %>
+<% if (installNativeInjects) { %>import "native-injects";<% } %>
+<% if (projectType == "Deployable") { %>
+<% if (setupCleanup) { %>import {setupAwaitMain, StoppingHandler} from "./process";<% } %><% if (setupArgs) { %>
 import {args, Arguments} from "./args";<% } %>
 import {createContext} from "./context";
 
@@ -34,4 +35,5 @@ async function run(<% if (setupCleanup) { %>stopping: StoppingHandler, <% } %><%
 <% if (setupArgs) { %>setupAwaitMain(run, args);<% } else { %>setupAwaitMain(run);<% } %>
 <% } else {%>
 <% if (setupArgs) { %>run(args);<% } else { %>run();<% } %>
+<% } %>
 <% } %>
