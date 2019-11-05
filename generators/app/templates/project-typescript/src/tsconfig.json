@@ -2,9 +2,11 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "esnext",
+        "moduleResolution": "node",
+
 
         "declaration": true,
-        "outDir": "../build/package/types",
+        "outDir": "../build/package/<%= projectType == "Library" ? "lib" : "app" %>",
 
         "strict": true,
         "allowSyntheticDefaultImports": true,

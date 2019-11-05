@@ -1,38 +1,39 @@
-{
+{<% var output = projectType == "Library" ? "lib" : "app"; %>
     "name": "<%= name %>",
     "version": "<%= version %>",
     "description": "<%= description %>",
-    "main": "app/index.ts",
+    "main": "<%= output %>/index.ts",
     "scripts": {
-        "start": "npm-run-all --parallel test:watch lint:watch start:app:watch type-check:watch",
+        "start": "npm-run-all --parallel test:watch lint:watch <% if (projectType !== "Library") { %>start:app:watch <% } %>type-check:watch",<% if (projectType != "Library") { %>
         "start:app": "./bin/app",
-        "start:app:watch": "nodemon --watch app --watch config --watch bin --quiet --exec 'npm' run start:app",
+        "start:app:watch": "nodemon --watch app --watch config --watch bin --quiet --ext \".ts,.js,.tsx,.jsx\" --exec 'npm' run start:app",<% } %>
         "type-check": "tsc --noEmit",
-        "type-check:watch": "npm run type-check -- --watch",
+        "type-check:watch": "nodemon --watch app --watch config --watch bin --quiet --ext \".ts,.js,.tsx,.jsx\" --exec 'npm' run type-check",
         "test": "mocha -r test/babel-register.js --reporter mocha-multi-reporters --reporter-options configFile=test/config.json --recursive test/**/*.ts",
         "test:watch": "npm run test -- --watch --watch-extensions 'ts'",
-        "lint": "esw app/**/*.ts",
+        "lint": "esw <%= output %>/**/*.ts",
         "lint:watch": "npm run lint -- --watch",
         "clean-all": "rm -rf ../build node_modules",
         "clean": "rm -rf ../build",
 
     <% if (environments.length > 0) { %>
         <% environments.forEach(function(environment) { %>
-        "build:<%= environment %>": "mkdir -p ../build/package/<%= environment %> && npm-run-all --parallel build:<%= environment %>:app build:<%= environment %>:package build:<%= environment %>:copy-files <% if (setupConfig) { %>build:<%= environment %>:config<% } %>",
+        "build:<%= environment %>": "mkdir -p ../build/package/<%= environment %> && npm-run-all --parallel build:<%= environment %>:app build:<%= environment %>:package build:<%= environment %>:package-lock build:<%= environment %>:copy-files <% if (setupConfig) { %>build:<%= environment %>:config<% } %>",
         "build:<%= environment %>:app": "babel app -d ../build/package/<%= environment %>/app --extensions \".ts,.tsx\"",
-        "build:<%= environment %>:package": "cp package-lock.json package.json ../build/package/<%= environment %>/",<% if (setupConfig) { %>
+        "build:<%= environment %>:package": "jq 'delpaths([[\"devDependencies\"], [\"scripts\"], [\"repository\"]])' package.json > ../build/package/<%= environment %>/package.json",
+        "build:<%= environment %>:package-lock": "if [ -f package-lock.json ]; then jq '. + {\"dependencies\": (.dependencies | to_entries | [.[] | select(.value.dev != true)] | from_entries)}' package-lock.json > ../build/package/<%= environment %>/package-lock.json; fi",<% if (setupConfig) { %>
         "build:<%= environment %>:config": "babel config/<%= environment %>.js -d ../build/package/<%= environment %>/config --extensions \".ts,.tsx,.js\"",<% } %>
-        "build:<%= environment %>:copy-files": "cp -r ../*.md ../build/package/<%= environment %>",
+        "build:<%= environment %>:copy-files": "cp -r ../*.md ../LICENSE ../build/package/<%= environment %> 2>/dev/null || :",
         <% }); %>
         "build": "npm-run-all --parallel <% environments.forEach(function(environment) { %>build:<%= environment %> <% }); %>",
     <% } else { %>
-
-        "build": "mkdir -p ../build/package/ && npm-run-all --parallel build:app build:package build:copy-files<% if (setupConfig) { %> build:config<% } %><% if (projectType == "Library") { %> build:types<% } %>",
-        "build:app": "babel app -d ../build/package/app --extensions \".ts,.tsx\"",
-        "build:package": "cp package-lock.json package.json ../build/package/",<% if (setupConfig) { %>
+        "build": "mkdir -p ../build/package/ && npm-run-all --parallel build:<%= output %> build:package build:package-lock build:copy-files<% if (setupConfig) { %> build:config<% } %><% if (projectType == "Library") { %> build:types<% } %>",
+        "build:<%= output %>": "babel <%= output %> -d ../build/package/<%= output %> --extensions \".ts,.tsx\"",
+        "build:package": "jq 'delpaths([[\"devDependencies\"], [\"scripts\"], [\"repository\"]]) + {\"types\": \"lib/index.d.ts\"}' package.json > ../build/package/package.json",
+        "build:package-lock": "if [ -f package-lock.json ]; then jq '. + {\"dependencies\": (.dependencies | to_entries | [.[] | select(.value.dev != true)] | from_entries)}' package-lock.json > ../build/package/package-lock.json; fi",<% if (setupConfig) { %>
         "build:config": "babel config/.js -d ../build/package/config --extensions \".ts,.tsx\"",<% } %>
-        "build:copy-files": "cp -r ../*.md ../build/package/",<% if (projectType == "Library") { %>
-        "build:types": "tsc --emitDeclarationOnly --outDir ../build/package/types",<% } %>
+        "build:copy-files": "cp -r ../*.md ../LICENSE ../build/package/ 2>/dev/null || :",<% if (projectType == "Library") { %>
+        "build:types": "tsc --emitDeclarationOnly --outDir ../build/package/<%= output %>",<% } %>
     <% } %>
 
         "prebuild": "npm run clean && mkdir -p ../build/package && npm-run-all --parallel test lint type-check"
@@ -44,6 +45,7 @@
     "repository": {},
     "bugs": {},
     "devDependencies": {
+        "node-jq": "^1.10.3",
         "@babel/cli": "^7.6.0",
         "@babel/core": "^7.6.0",
         "@babel/node": "^7.6.0",

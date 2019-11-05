@@ -110,8 +110,8 @@ class AppGenerator extends Generator {
         if (this.props.projectType == "Library") {
             options = {
                 globOptions: {
-                    ignore: ["**/bin/*"]
-                },
+                    ignore: ["**/bin/*", "**/src/app/*"]
+                }
             }
         }
         this.fs.copyTpl(
@@ -121,6 +121,14 @@ class AppGenerator extends Generator {
             null,
             options
         );
+
+        if (this.props.projectType == "Library") {
+            this.fs.copyTpl(
+                this.templatePath(projectPath + '/src/app/**'),
+                this.destinationPath(this.props.name + "/src/lib"),
+                templateProperties
+            );
+        }
 
 
         this.fs.copyTpl(

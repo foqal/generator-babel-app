@@ -2,7 +2,8 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "esnext",
-        "allowSynthenticDefaultImports": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
         "types": ["node","mocha"]
     }
 }

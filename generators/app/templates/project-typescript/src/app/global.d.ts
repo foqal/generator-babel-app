@@ -14,7 +14,3 @@
     }
     /*eslint-enable @typescript-eslint/no-empty-interface*/
 }<% } %>
-
-type Nullable<T> = T | null;
-type UndefinableNullable<T> = T | null | undefined;
-type Undefinable<T> = T | undefined;
