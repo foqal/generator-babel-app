@@ -1,6 +1,6 @@
 import {getInfo, Info} from "./process";<% if (setupConfig) { %>
 import {readConfig, Config} from "./config";<% } %><% if (setupLogging) { %>
-import {createLogger, setupUnhandledErrors, Logger} from "./logging";<% } %><% if (setupArgs) { %>
+import {createLogger, Logger} from "./logging";<% } %><% if (setupArgs) { %>
 import {Arguments} from "./args";<% } %>
 
 interface Context {
@@ -19,8 +19,7 @@ function createContext(<% if (setupArgs) { %>args: Arguments<% } %>): Context {
         config,<% } %><% if (setupLogging) { %>
         logger,<% } %><% if (setupArgs) { %>
         args<% } %>
-    } as Context;<% if (setupLogging) { %>
-    setupUnhandledErrors(context.logger);<% } %>
+    } as Context;
     return context;
 }
 

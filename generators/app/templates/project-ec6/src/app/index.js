@@ -1,7 +1,7 @@
 import {getInfo<% if (setupCleanup) { %>, setupAwaitMain<% } %>} from "./process";<% if (installNativeInjects) { %>
 import "native-injects";<% } %><% if (setupConfig) { %>
 import {readConfig} from "./config";<% } %><% if (setupLogging) { %>
-import {createLogger, setupUnhandledErrors} from "./logging";<% } %><% if (setupArgs) { %>
+import {createLogger} from "./logging";<% } %><% if (setupArgs) { %>
 import {args} from "./args";<% } %>
 
 
@@ -17,7 +17,6 @@ async function run(stopping, args) {
         args<% } %>
     };<% if (setupLogging) { %>
     context.logger.info({app: info.name, version: info.version}, "Starting...");
-    setupUnhandledErrors(context);
     try {
         <% if (setupCleanup) { %>
         stopping.onCleanup(async () => {

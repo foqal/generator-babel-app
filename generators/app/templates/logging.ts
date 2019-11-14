@@ -50,9 +50,10 @@ function createLogger(<% if (setupConfig) { %>config: Config, <% } %><% if (setu
     logger.warn = logger.warn.bind(logger);
     logger.error = logger.error.bind(logger);
     logger.fatal = logger.fatal.bind(logger);
+    setupUnhandledErrors(logger);
 
     return logger;
 }
 
 
-export {createLogger, setupUnhandledErrors, Logger};
+export {createLogger, Logger};

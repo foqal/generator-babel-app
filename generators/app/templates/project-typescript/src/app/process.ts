@@ -1,7 +1,7 @@
 interface Info {
     name: string;
-    version: Undefinable<string>;
-    description: Undefinable<string>;
+    version?: string;
+    description?: string;
 }
 
 function getInfo(): Info {

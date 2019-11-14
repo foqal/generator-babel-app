@@ -137,6 +137,12 @@ class AppGenerator extends Generator {
             templateProperties
         );
 
+        this.fs.copyTpl(
+            this.templatePath(projectPath + '/.gitignore'),
+            this.destinationPath(path.join(this.props.name, ".gitignore")),
+            templateProperties
+        );
+
         if (this.props.setupLogging) {
             this.fs.copyTpl(
                 this.templatePath(`logging${extension}`),

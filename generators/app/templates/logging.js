@@ -7,12 +7,12 @@ const DEFAULT_CONFIG = {
     color: true
 };
 
-function setupUnhandledErrors(context) {
+function setupUnhandledErrors(logger) {
     process.on("unhandledRejection", (err) => {
-        context.logger.error({err}, "Unhandled promise error");
+        logger.error({err}, "Unhandled promise error");
     });
     process.on("uncaughtException", (err) => {
-        context.logger.error({err}, "Unhandled Exception");
+        logger.error({err}, "Unhandled Exception");
     });
 }
 
@@ -42,9 +42,10 @@ function createLogger(config, args) {
     ["debug", "info", "error", "warn", "trace"].forEach(name => {
         logger[name] = logger[name].bind(logger);
     });
+    setupUnhandledErrors(logger);
 
     return logger;
 }
 
 
-export {createLogger, setupUnhandledErrors};
+export {createLogger};
