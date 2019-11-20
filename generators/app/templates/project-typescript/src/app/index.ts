@@ -1,3 +1,4 @@
+<% if (projectType == "Library") { %>#!/usr/bin/env node<% } %>
 <% if (installNativeInjects) { %>import "native-injects";<% } %>
 <% if (projectType == "Deployable") { %>
 <% if (setupCleanup) { %>import {setupAwaitMain, StoppingHandler} from "./process";<% } %><% if (setupArgs) { %>

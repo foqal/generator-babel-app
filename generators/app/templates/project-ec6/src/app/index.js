@@ -1,3 +1,4 @@
+<% if (projectType == "Library") { %>#!/usr/bin/env node<% } %>
 import {getInfo<% if (setupCleanup) { %>, setupAwaitMain<% } %>} from "./process";<% if (installNativeInjects) { %>
 import "native-injects";<% } %><% if (setupConfig) { %>
 import {readConfig} from "./config";<% } %><% if (setupLogging) { %>
